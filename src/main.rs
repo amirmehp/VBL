@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::env;
-use std::collections::HashMap;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -11,46 +10,36 @@ fn main() {
     file.read_to_string(&mut content)
 	.expect("Cant't Read File :(  ERROR: ");
     let chars: Vec<char> = content.chars().collect();
-    /*let mut tokens = HashMap::new();
-    tokens.insert(
-	"equal".to_string(),
-	"=".to_string()
-    );
-    tokens.insert(
-	"hello".to_string(),
-	"Hello to YOUU".to_string()
-    );
-    let mut words = Vec::<String>::new();*/
-    for ch in chars{
-	match ch {
-            '+' => /*Some(Token::Add)*/ println!("add"),
-	    '-' => /*Some(Token::Minus)*/ println!("minus"),
-	    '*' => /*Some(Token::Mul)*/ println!("multi"),
-	    '/' => /*Some(Token::Div)*/ println!("devide"),
-	    '=' => /*Some(Token::Div)*/ println!("equals"),
-	    ch if ch.is_numeric() => println!("n"),
-	    ch if ch.is_alphanumeric() => println!("an"),
-	    ch if ch.is_whitespace() => /*Some(Token::Whitespace)*/ println!("whitespace"),
-	    _ => println!("Not Compatable"),
-        };
+   
+    let mut words: Vec<String> = Vec::<String>::new();
+    let mut word = String::new();    
+    for window in chars.as_slice().windows(2){
+		let ch = window[0] as char;
+		let next_char = window[1] as char;
+		match ch {
+			'+' => println!("add"),
+			'-' => println!("minus"),
+			'*' => println!("multi"),
+			'/' => println!("devide"),
+			'=' => println!("equals"),
+			ch if ch.is_numeric() => {
+				if next_char.is_whitespace(){
+					println!("<num>");
+					word.push_str(&ch.to_string());
+				}
+			},
+			ch if ch.is_alphanumeric() => {
+				if next_char.is_whitespace(){
+					println!("<id>");
+					word.push_str(&ch.to_string());
+				}
+			},
+			ch if ch.is_whitespace() => println!("<space>"),
+			_ => println!("Not Compatable"),
+		};
 
-
-	//let mut word = String::new();
-	//if ch.is_whitespace(){
-	//    if words.len() > 0{
-	//	words.push(word.clone())
-	//    }else{
-	//	println!("Whitespace");
-	//    }
-	//}else{
-	//    word.push(ch);
-	//}
+		for item in &words{
+			println!("WORDS: {}", item);
+		}
     }
-   // for word in words{
-//	println!("{}", word);
-//	match tokens.get(&word.to_string()) {
-//	    Some(msg) => println!("{}", msg),
-//	    None => println!("Not compatable {}", word)
-//	}
-  //  }
 }
