@@ -11,40 +11,93 @@ fn main() {
 	.expect("Cant't Read File :(  ERROR: ");
     let chars: Vec<char> = content.chars().collect();
    
-    let mut words: Vec<String> = Vec::<String>::new();
-    let mut word = String::new();    
+    let mut tokens: Vec<String> = Vec::<String>::new();
+    let mut token = String::new();
+
     for window in chars.as_slice().windows(2){
 		let ch = window[0] as char;
 		let next_char = window[1] as char;
 		match ch {
-			'+' => println!("add"),
-			'-' => println!("minus"),
-			'*' => println!("multi"),
-			'/' => println!("devide"),
-			'=' => println!("equals"),
+			'+' => {
+				println!("<PLUS>");
+				tokens.push(token.clone());
+				token = "".to_string();
+			},
+			'-' => {
+				println!("<MINUS>");
+				tokens.push(token.clone());
+				token = "".to_string();
+			},
+			'*' => {
+				println!("<MULTI>");
+				tokens.push(token.clone());
+				token = "".to_string();
+			},
+			'/' => {
+				println!("<DEVIDE>");
+				tokens.push(token.clone());
+				token = "".to_string();
+			},
+			'=' => {
+				println!("<EQUAL>");
+				tokens.push(token.clone());
+				token = "".to_string();
+			},
 			ch if ch.is_numeric() => {
-				word.push_str(&ch.to_string());
+				token.push_str(&ch.to_string());
 				if next_char.is_whitespace(){
-					println!("<num> {}", word);
-					words.push(word.clone());
-					word = "".to_string();
+					println!("<NUMBER> {}", token);
+					tokens.push(token.clone());
+					token = "".to_string();
 				}
 			},
 			ch if ch.is_alphanumeric() => {
-				word.push_str(&ch.to_string());
+				token.push_str(&ch.to_string());
 				if next_char.is_whitespace(){
-					println!("<id> {}", word);
-					words.push(word.clone());
-					word = "".to_string();
+					//println!("<id> {}", token);
+					tokens.push(token.clone());
+					token = "".to_string();
 				}
 			},
 			ch if ch.is_whitespace() => {
-				println!("<space>");
+				//println!("<space>");
 			}
-			_ => println!("Not Compatable"),
+			_ => println!("ERR: Uknown Character {}", ch),
 		};
     }
-	for item in &words{
-			println!("WORDS: {}", item);
+	let mut print = false;
+	let mut if_tk = false;
+	for token in tokens{
+		match token.as_str(){
+			"print" => {
+				println!("<PRINT>");
+				print = true;
+			},
+			"if" => {
+				println!("<IF>");
+				if_tk = true;
+				print = false;
+			},
+			"then" => println!("<THEN>"),
+			"input" => println!("<INPUT>"),
+			"goto" => println!("<GOTO>"),
+			"for" => println!("<FOR>"),
+			"to" => println!("<TO>"),
+			"next" => println!("<NEXT>"),
+			"gosub" => println!("<GOSUB>"),
+			"return" => println!("<RETURN>"),
+			"end" => println!("<END>"),
+			"else" => println!("<ELSE>"),
+			_ => {
+				if print == true{
+					println!("PRINT: {}", token);
+				}else if if_tk == true{
+					println!("IF: {}", token);
+				}
+				else{
+					println!("ERR: Token `{}` can't be parsed!", token);
+				}
+			},
+		}
 	}
 }
