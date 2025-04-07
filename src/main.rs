@@ -23,23 +23,28 @@ fn main() {
 			'/' => println!("devide"),
 			'=' => println!("equals"),
 			ch if ch.is_numeric() => {
+				word.push_str(&ch.to_string());
 				if next_char.is_whitespace(){
-					println!("<num>");
-					word.push_str(&ch.to_string());
+					println!("<num> {}", word);
+					words.push(word.clone());
+					word = "".to_string();
 				}
 			},
 			ch if ch.is_alphanumeric() => {
+				word.push_str(&ch.to_string());
 				if next_char.is_whitespace(){
-					println!("<id>");
-					word.push_str(&ch.to_string());
+					println!("<id> {}", word);
+					words.push(word.clone());
+					word = "".to_string();
 				}
 			},
-			ch if ch.is_whitespace() => println!("<space>"),
+			ch if ch.is_whitespace() => {
+				println!("<space>");
+			}
 			_ => println!("Not Compatable"),
 		};
-
-		for item in &words{
-			println!("WORDS: {}", item);
-		}
     }
+	for item in &words{
+			println!("WORDS: {}", item);
+	}
 }
