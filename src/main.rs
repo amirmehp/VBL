@@ -1,103 +1,114 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::env;
+use std::process::exit;
+
+pub fn slice_char_to_str(slice: &[char]) -> String{
+    let mut word = String::new();
+    for ch in slice{
+	word.push(*ch);
+    }
+    word
+} // Had to write this $hit because the fuckin' "C killer" is not able to convert slice char to str in it's normal version (-_-)
 
 fn main() {
+    let ast: Vec<String> = Vec::<String>::new();
     let args: Vec<String> = env::args().collect();
+    if args.len() <= 1{
+	eprintln!("Usage: VBL [filepath]");
+	exit(1);
+    }
     let mut file = File::open(&args[1])
 	.expect("Cant't Open File :(  ERROR: ");
     let mut content = String::new();
     file.read_to_string(&mut content)
 	.expect("Cant't Read File :(  ERROR: ");
     let chars: Vec<char> = content.chars().collect();
-   
-    let mut tokens: Vec<String> = Vec::<String>::new();
-    let mut token = String::new();
-
-    for window in chars.as_slice().windows(2){
-		let ch = window[0] as char;
-		let next_char = window[1] as char;
-		match ch {
-			'+' => {
-				println!("<PLUS>");
-				tokens.push(token.clone());
-				token = "".to_string();
-			},
-			'-' => {
-				println!("<MINUS>");
-				tokens.push(token.clone());
-				token = "".to_string();
-			},
-			'*' => {
-				println!("<MULTI>");
-				tokens.push(token.clone());
-				token = "".to_string();
-			},
-			'/' => {
-				println!("<DEVIDE>");
-				tokens.push(token.clone());
-				token = "".to_string();
-			},
-			'=' => {
-				println!("<EQUAL>");
-				tokens.push(token.clone());
-				token = "".to_string();
-			},
-			ch if ch.is_numeric() => {
-				token.push_str(&ch.to_string());
-				if next_char.is_whitespace(){
-					println!("<NUMBER> {}", token);
-					tokens.push(token.clone());
-					token = "".to_string();
-				}
-			},
-			ch if ch.is_alphanumeric() => {
-				token.push_str(&ch.to_string());
-				if next_char.is_whitespace(){
-					//println!("<id> {}", token);
-					tokens.push(token.clone());
-					token = "".to_string();
-				}
-			},
-			ch if ch.is_whitespace() => {
-				//println!("<space>");
-			}
-			_ => println!("ERR: Uknown Character {}", ch),
-		};
+    #[derive(Debug)]
+    enum TokenType{
+	PLUS,
+	MINUS,
+	MULTI,
+	DEVIDE,
+	EQUAL,
+	NUMBER,
+	PRINT,
+	IF,
+	THEN,
+	INPUT,
+	GOTO,
+	FOR,
+	TO,
+	NEXT,
+	GOSUB,
+	RETURN,
+	END,
+	ELSE
     }
-	let mut print = false;
-	let mut if_tk = false;
-	for token in tokens{
-		match token.as_str(){
+    struct Token{
+	value: String,
+	ttype: TokenType
+    }
+    
+    let mut tokens: Vec<Token> = Vec::<Token>::new();
+    let mut i = 0;
+    while i < chars.len(){
+	match chars[i]{
+	    ' ' => {
+		println!("WhiteSPACE");
+		i+=1
+	    },
+	    '+' => {
+		tokens.push(Token{value: chars[i].to_string(), ttype: TokenType::PLUS});
+		i+=1
+	    },
+	    '*' => {
+		tokens.push(Token{value: chars[i].to_string(), ttype: TokenType::MULTI});
+		i+=1
+	    },
+	    '/' => {
+		tokens.push(Token{value: chars[i].to_string(), ttype: TokenType::DEVIDE});
+		i+=1
+	    },
+	    '-' => {
+		tokens.push(Token{value: chars[i].to_string(), ttype: TokenType::MINUS});
+		i+=1
+	    }
+	    _ => {
+		if chars[i].is_alphanumeric(){
+		    let start = i;
+		    while i < chars.len() && chars[i].is_alphanumeric(){i+=1};
+		    let word = slice_char_to_str(&chars[start..i]);
+		    println!("{word}");// TODO: Figure out why this went wrong:(((
+		    match word.as_str(){
 			"print" => {
-				println!("<PRINT>");
-				print = true;
+			    tokens.push(Token{value: word, ttype: TokenType::PRINT});
+			    i+=1
 			},
 			"if" => {
-				println!("<IF>");
-				if_tk = true;
-				print = false;
+			    tokens.push(Token{value: word, ttype: TokenType::IF});
+			    i+=1
 			},
-			"then" => println!("<THEN>"),
-			"input" => println!("<INPUT>"),
-			"goto" => println!("<GOTO>"),
-			"for" => println!("<FOR>"),
-			"to" => println!("<TO>"),
-			"next" => println!("<NEXT>"),
-			"gosub" => println!("<GOSUB>"),
-			"return" => println!("<RETURN>"),
-			"end" => println!("<END>"),
-			"else" => println!("<ELSE>"),
-			_ => {
-				if print == true{
-					println!("PRINT: {}", token);
-				}else if if_tk == true{
-					println!("IF: {}", token);
-				}
-				else{
-					println!("ERR: Token `{}` can't be parsed!", token);
-				}
+			"then" => {
+			    tokens.push(Token{value: word, ttype: TokenType::THEN});
+			    i+=1
 			},
+			"else" => {
+			    tokens.push(Token{value: word, ttype: TokenType::ELSE});
+			    i+=1
+			},
+			_ => i+=1,
+		    }
 		}
+		i+=1;
+	    },
 	}
+    }
+    for token in &tokens{
+	println!("<{}>:<{:?}>", token.value, token.ttype);
+    }
+}
+
+fn parser(ast: Vec<String>){
+    println!("{ast:?}");
 }
