@@ -29,12 +29,12 @@ for i=0 to 5
 next
 ```
 ## For Now
-### Foundation
 - [x] Reading Files
 - [ ] CLI
-### [x] Tokenizer
+- [x] Tokenizer
 (still needs some work)
-### [ ] Parser
-### [ ] Evaluator
+- [ ] Parser
+- [ ] Evaluator
+- [ ] Could interpret a BASIC example
 ## The Future
 For now this is a toy interpreter for me to mess around with it and learn but when I have completely made it work I'm going to add more stuff to it to make it actually usable, but I'm going to keep things as minimal as possible because it should be a VeryBASICLanguage;))
