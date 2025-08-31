@@ -117,12 +117,14 @@ fn tokenizer(chars: Vec<char>) -> Vec<Token>{
 	    },
 	    _ => {
 		if chars[i].is_numeric(){
-		    let start = i;
+		    let start = i;	 
+		    while i < chars.len() && chars[i].is_numeric() {
+			i += 1;
+		    } 
 		    let num: String = chars[start..i]
 			.iter()
-			.collect();
-		    i += num.len();
-		    tokens.push(Token{value: num, ttype: TokenType::NUMBER})
+			.collect();	    
+		    tokens.push(Token {value: num.clone(), ttype: TokenType::NUMBER});
 		}
 		if chars[i].is_alphanumeric(){
 		    let word: String = chars[i..]
