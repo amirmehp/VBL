@@ -1,4 +1,6 @@
 # VBL
+> [!WARNING]
+> This Project is not Completed yet and will not work as intended (at least for now)
 ## Very BASIC Language
 This was initially going to be **Yet Another BASIC Interpreter** but I decided that it would be cooler if it was just a language made by me written in Rust(which I think was a mistake). And I still don't know what I wanna do with it all I know is that I wanna learn:))))
 Until now It's only a broken tokenizer:///
