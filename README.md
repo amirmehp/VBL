@@ -35,7 +35,8 @@ next
 - [ ] CLI
 - [x] Tokenizer
 (still needs some work)
-- [ ] Parser
+- [ ] if statements and newlines
+- [ ] Parser (Not even close to done)
 - [ ] Evaluator
 - [ ] Could interpret a BASIC example
 ## The Future
