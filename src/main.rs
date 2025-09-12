@@ -73,8 +73,8 @@ fn tokenizer(chars: Vec<char>) -> Vec<Token>{
     while i < chars.len(){
 	match chars[i]{
 	    ' ' => {
-		i+=1
-	    },
+                i+=1
+            },
 	    '+' => {
 		tokens.push(Token{value: chars[i].to_string(), ttype: TokenType::PLUS});
 		i+=1
@@ -115,21 +115,32 @@ fn tokenizer(chars: Vec<char>) -> Vec<Token>{
 		i+=1;
 		tokens.push(Token{value: text, ttype: TokenType::STRING});
 	    },
+	    ';' | '\n' => {
+                // Treat both semicolon and newline as end of line
+		// TODO: \n doesn't wooork -_-
+                tokens.push(Token{value: chars[i].to_string(), ttype: TokenType::EOL});
+                i+=1;
+            },
 	    _ => {
 		if chars[i].is_numeric(){
 		    let start = i;	 
-		    while i < chars.len() && chars[i].is_numeric() {
+		    while i < chars.len() && chars[i].is_numeric() && chars[i] != ';'{
 			i += 1;
 		    } 
 		    let num: String = chars[start..i]
 			.iter()
 			.collect();	    
 		    tokens.push(Token {value: num.clone(), ttype: TokenType::NUMBER});
+		   // Check for end of line (semicolon or newline)
+                    if i < chars.len() && (chars[i] == ';' || chars[i] == '\n'){
+                        tokens.push(Token{value: chars[i].to_string(), ttype: TokenType::EOL});
+                        i+=1;
+                    }
 		}
-		if chars[i].is_alphanumeric(){
+		else if chars[i].is_alphanumeric(){
 		    let word: String = chars[i..]
 			.iter()
-			.take_while(|&&c| c.is_alphanumeric())
+			.take_while(|&&c| c.is_alphanumeric() && c != ';' && c != '\n')
 			.collect();
 		    i += word.len();
 		    match word.as_str(){
@@ -152,6 +163,10 @@ fn tokenizer(chars: Vec<char>) -> Vec<Token>{
 			    tokens.push(Token{value: word, ttype: TokenType::ID})
 			},
 		    }
+		    if i < chars.len() && (chars[i] == ';' || chars[i] == '\n'){
+                        tokens.push(Token{value: chars[i].to_string(), ttype: TokenType::EOL});
+                        i+=1;
+                    }
 		}
 	    },
 	}
@@ -162,16 +177,44 @@ fn tokenizer(chars: Vec<char>) -> Vec<Token>{
 fn parser(tokens: Vec<Token>){
     let mut i = 0;
     while i < tokens.len(){
-	let mut token = &tokens[i];
-	println!("{:#?}", token);
+	let token = &tokens[i];
+	// println!("{:#?}", token);
 	match token.ttype{
 	    TokenType::PLUS => {
 		println!("<PLUS> RIGHT<{:?}> LEFT<{:?}>", tokens[i+1], tokens[i-1]);
 	    },
 	    TokenType::EQUAL => {
-		println!("<EQUAL> RIGHT<{:?}> LEFT<{:?}>", tokens[i+1], tokens[i-1]);
+		println!("<ASIGNMENT>");
+		println!("LHS: {}", tokens[i-1].value);
+		let start = i+1;
+		while tokens[i].ttype != TokenType::EOL {
+		    i+=1;
+		}
+		let mut rhs: &[Token] = &tokens[start..i]; // TODO: make this Vec<Token> and feed it to the parser recursivly
+		println!("RHS: {:#?}", rhs);
 	    },
-	    _ =>{}
+	    TokenType::IF => {
+		println!("<IF STATEMENT>");
+		let start = i+1;
+		while tokens[i].ttype != TokenType::THEN {
+		    i+=1;
+		}
+		let mut cond: &[Token] = &tokens[start..i];
+		println!("Condition: {:#?}", cond);
+
+		let start = i+1;
+		while tokens[i].ttype != TokenType::ELSE{		    
+		    i+=1;
+		}
+		let mut block: &[Token] = &tokens[start..i];
+		println!("Block: {:#?}", block);
+		if tokens[i].ttype == TokenType::ELSE{
+		    println!("ELSE (not implemented) "); // TODO: Make else work
+		}
+	    },
+	    _ =>{
+		println!("Unexpected Token: ({:#?})", token);
+	    }
 	}
 	i+=1
     }
