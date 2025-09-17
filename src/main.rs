@@ -2,48 +2,10 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::env;
 use std::process::exit;
-
-// pub fn slice_char_to_str(slice: &[char]) -> String{
-//     let mut word = String::new();
-//     for ch in slice{
-// 	word.push(*ch);
-//     }
-//     word
-// } // Had to write this $hit because the fuckin' "C killer" is not able to convert slice char to str in it's normal version (-_-)
-#[derive(Debug)]
-#[derive(PartialEq)]
-enum TokenType{
-    PLUS,
-    MINUS,
-    MULTI,
-    DEVIDE,
-    EQUAL,
-    NUMBER,
-    PRINT,
-    IF,
-    THEN,
-    INPUT,
-    GOTO,
-    FOR,
-    TO,
-    NEXT,
-    GOSUB,
-    RETURN,
-    END,
-    ELSE,
-    ID,
-    STRING,
-    BIGGERTHAN,
-    LESSTHAN,
-    TRUE,
-    FALSE,
-    EOL
-}
-#[derive(Debug)]
-struct Token{
-    value: String,
-    ttype: TokenType
-}
+mod lexer;
+use crate::lexer::Token;
+use crate::lexer::TokenType;
+use crate::lexer::Tokenizer;
 enum Ast<T> {
     Node{
 	value: T,
@@ -54,6 +16,14 @@ enum Ast<T> {
     Empty
 }
 fn main() {
+    let mut t = Tokenizer::new(r#"
+10 LET X = 5
+20 IF X < 10 THEN PRINT "Hello"
+30 GOTO 50
+40 PRINT "Never reached"
+50 END
+"#.chars().collect());
+    println!("{:#?}", t.tokenize());
     let args: Vec<String> = env::args().collect();
     if args.len() <= 1{
 	eprintln!("Usage: VBL [filepath]");
@@ -65,7 +35,7 @@ fn main() {
     file.read_to_string(&mut content)
 	.expect("Cant't Read File :(  ERROR: ");
     let chars: Vec<char> = content.chars().collect();
-    parser(tokenizer(chars));
+    //parser(tokenizer(chars));
 }
 fn tokenizer(chars: Vec<char>) -> Vec<Token>{
     let mut tokens: Vec<Token> = Vec::<Token>::new();
