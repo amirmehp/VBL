@@ -33,7 +33,7 @@ next
 ## For Now
 - [x] Reading Files
 - [ ] CLI
-- [x] Tokenizer
+- [ ] Tokenizer
 (still needs some work)
 - [ ] if statements and newlines
 - [ ] Parser (Not even close to done)
