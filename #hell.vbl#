@@ -1,5 +1,0 @@
-x = 1;
-y = 1;
-t = x + y;
-if true then print "Hello, World!"
-else print "Bye"
